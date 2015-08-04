@@ -116,6 +116,7 @@ public class BluethoothDevicesDialog extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     mListener.connectToBluetoothDevice(currentItem.getAddress());
+                    dismiss();
                 }
             });
 
