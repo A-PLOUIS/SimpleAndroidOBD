@@ -66,7 +66,8 @@ public class BluethoothDevicesDialog extends DialogFragment {
         builder.setTitle("Paired Devices");
         builder.setAdapter(new ListDevicesAdapter(getActivity(),
                 android.R.layout.simple_list_item_1,
-                (BluetoothDevice[]) m_bluetoothDevices.toArray()), null);
+                        m_bluetoothDevices.toArray(new BluetoothDevice[m_bluetoothDevices.size()])),
+                null);
         return builder.create();
     }
 
@@ -106,7 +107,7 @@ public class BluethoothDevicesDialog extends DialogFragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = LayoutInflater.from(getActivity()).inflate(android.R.layout.simple_list_item_1, parent);
+                convertView = LayoutInflater.from(getActivity()).inflate(android.R.layout.simple_list_item_1, null);
             }
             final BluetoothDevice currentItem = getItem(position);
 

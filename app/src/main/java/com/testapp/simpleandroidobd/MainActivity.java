@@ -1,16 +1,21 @@
 package com.testapp.simpleandroidobd;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+import com.testapp.simpleandroidobd.dialog.BluethoothDevicesDialog;
+
+public class MainActivity extends AppCompatActivity implements BluethoothDevicesDialog.BluethoothDevicesDialogListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        BluethoothDevicesDialog dialog = BluethoothDevicesDialog.newInstance();
+        dialog.show(getSupportFragmentManager(), "dialog_bluetooth_devices");
     }
 
     @Override
@@ -33,5 +38,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void connectToBluetoothDevice(String p_address) {
+
     }
 }
