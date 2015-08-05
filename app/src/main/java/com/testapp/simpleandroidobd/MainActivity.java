@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.testapp.simpleandroidobd.dialog.BluethoothDevicesDialog;
@@ -14,12 +16,23 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity implements BluethoothDevicesDialog.BluethoothDevicesDialogListener {
 
     private OBDManager m_obdManager;
+    private TextView m_txtRpm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        m_txtRpm = (TextView) findViewById(R.id.txt_rpm);
         m_obdManager = new OBDManager();
+        findViewById(R.id.btn_refresh).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                byte[] result = m_obdManager.launchOBDCommand("010C");
+                int rpm = computeEngineRPM(result);
+                m_txtRpm.setText(rpm);
+            }
+        });
 
         BluethoothDevicesDialog dialog = BluethoothDevicesDialog.newInstance();
         dialog.show(getSupportFragmentManager(), "dialog_bluetooth_devices");
@@ -66,5 +79,13 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
             e.printStackTrace();
             Toast.makeText(this, "Couldn't connect to OBD Reader", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private int computeEngineRPM(byte[] p_data) {
+        int rpm = -1;
+        if (p_data.length == 4) {
+            rpm = (p_data[2] * 256 + p_data[3]) / 4;
+        }
+        return rpm;
     }
 }
