@@ -63,11 +63,15 @@ public class BluethoothDevicesDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Paired Devices");
-        builder.setAdapter(new ListDevicesAdapter(getActivity(),
-                android.R.layout.simple_list_item_1,
-                        m_bluetoothDevices.toArray(new BluetoothDevice[m_bluetoothDevices.size()])),
-                null);
+        if (m_bluetoothDevices != null) {
+            builder.setTitle("Paired devices");
+            builder.setAdapter(new ListDevicesAdapter(getActivity(),
+                            android.R.layout.simple_list_item_1,
+                            m_bluetoothDevices.toArray(new BluetoothDevice[m_bluetoothDevices.size()])),
+                    null);
+        } else {
+            builder.setTitle("No paired devices");
+        }
         return builder.create();
     }
 
@@ -116,7 +120,6 @@ public class BluethoothDevicesDialog extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     mListener.connectToBluetoothDevice(currentItem.getAddress());
-                    dismiss();
                 }
             });
 

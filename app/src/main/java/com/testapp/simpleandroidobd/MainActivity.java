@@ -2,6 +2,7 @@ package com.testapp.simpleandroidobd;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
 
     private OBDManager m_obdManager;
     private TextView m_txtRpm;
+    private BluethoothDevicesDialog m_dlgBluetoothDevices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +36,8 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
             }
         });
 
-        BluethoothDevicesDialog dialog = BluethoothDevicesDialog.newInstance();
-        dialog.show(getSupportFragmentManager(), "dialog_bluetooth_devices");
+        m_dlgBluetoothDevices = BluethoothDevicesDialog.newInstance();
+        m_dlgBluetoothDevices.show(getSupportFragmentManager(), "dialog_bluetooth_devices");
     }
 
     @Override
@@ -75,9 +77,10 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
     public void connectToBluetoothDevice(String p_address) {
         try {
             m_obdManager.connectToOBDReader(p_address);
+            m_dlgBluetoothDevices.dismiss();
         } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Couldn't connect to OBD Reader", Toast.LENGTH_SHORT).show();
+            Log.d("CONNECTION", "Failed to connect to " + p_address);
+            Toast.makeText(this, "Couldn't connect to OBD Reader\n" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
