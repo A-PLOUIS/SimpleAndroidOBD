@@ -12,7 +12,9 @@ import android.widget.Toast;
 import com.testapp.simpleandroidobd.dialog.BluethoothDevicesDialog;
 import com.testapp.simpleandroidobd.obd.OBDManager;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity implements BluethoothDevicesDialog.BluethoothDevicesDialogListener {
 
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(this, "Couldn't disconnect to OBD Reader", Toast.LENGTH_SHORT).show();
+            logError(e);
         }
         super.onDestroy();
     }
@@ -81,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
         } catch (IOException e) {
             Log.d("CONNECTION", "Failed to connect to " + p_address);
             Toast.makeText(this, "Couldn't connect to OBD Reader\n" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            logError(e);
         }
     }
 
@@ -90,5 +94,16 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
             rpm = (p_data[2] * 256 + p_data[3]) / 4;
         }
         return rpm;
+    }
+
+    private void logError(Exception p_exception) {
+        Log.d("test", getApplicationInfo().dataDir);
+        try {
+            OutputStreamWriter out = new OutputStreamWriter(openFileOutput(getApplicationInfo().dataDir + File.separator + "log.txt"
+                    , MODE_APPEND));
+            out.write(p_exception.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
