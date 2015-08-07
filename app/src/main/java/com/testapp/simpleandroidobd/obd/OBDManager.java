@@ -25,6 +25,7 @@ public class OBDManager {
         setBluetoothDevice(p_address);
         if (m_device != null) {
             m_socket = m_device.createRfcommSocketToServiceRecord(SPP_UUID);
+            m_socket.connect();
 
             //Reset OBD
             sendCommand("AT Z", m_socket.getOutputStream());
