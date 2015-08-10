@@ -1,6 +1,7 @@
 package com.testapp.simpleandroidobd;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -13,8 +14,10 @@ import com.testapp.simpleandroidobd.dialog.BluethoothDevicesDialog;
 import com.testapp.simpleandroidobd.obd.OBDManager;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements BluethoothDevicesDialog.BluethoothDevicesDialogListener {
 
@@ -97,11 +100,19 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
     }
 
     private void logError(Exception p_exception) {
-        Log.d("test", getApplicationInfo().dataDir);
+        String logPath = Environment.getExternalStorageDirectory() + File.separator + "OBDCrashes" + File.separator + "log.txt";
+        Log.d("MainActivity", "Wrote log to : " + logPath);
         try {
-            OutputStreamWriter out = new OutputStreamWriter(openFileOutput(getApplicationInfo().dataDir + File.separator + "log.txt"
-                    , MODE_APPEND));
-            out.write(p_exception.toString());
+            FileOutputStream out = new FileOutputStream(logPath, Boolean.TRUE);
+            OutputStreamWriter writer = new OutputStreamWriter(out);
+            writer.write("New Exception\n");
+            writer.write("Date : " + new Date(System.currentTimeMillis()) + '\n' + '\n');
+            for (StackTraceElement elem : p_exception.getStackTrace()) {
+                writer.write(elem.toString() + "\n");
+            }
+            writer.write("\n\n\n");
+            writer.close();
+            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
