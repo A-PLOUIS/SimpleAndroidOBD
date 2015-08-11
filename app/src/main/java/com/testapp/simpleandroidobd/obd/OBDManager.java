@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
+import com.testapp.simpleandroidobd.utils.LogUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -43,6 +45,7 @@ public class OBDManager {
             sendCommand(p_command, m_socket.getOutputStream());
             return readResponse(m_socket.getInputStream());
         } catch (IOException e) {
+            LogUtils.logError(e);
             e.printStackTrace();
             return new byte[0];
         }
@@ -74,5 +77,4 @@ public class OBDManager {
             m_socket = null;
         }
     }
-
 }

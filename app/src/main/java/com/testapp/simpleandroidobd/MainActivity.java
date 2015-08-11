@@ -1,7 +1,6 @@
 package com.testapp.simpleandroidobd;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -12,12 +11,9 @@ import android.widget.Toast;
 
 import com.testapp.simpleandroidobd.dialog.BluethoothDevicesDialog;
 import com.testapp.simpleandroidobd.obd.OBDManager;
+import com.testapp.simpleandroidobd.utils.LogUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements BluethoothDevicesDialog.BluethoothDevicesDialogListener {
 
@@ -35,9 +31,13 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
         findViewById(R.id.btn_refresh).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                byte[] result = m_obdManager.launchOBDCommand("010C");
-                int rpm = computeEngineRPM(result);
-                m_txtRpm.setText(rpm);
+                try {
+                    byte[] result = m_obdManager.launchOBDCommand("010C");
+                    int rpm = computeEngineRPM(result);
+                    m_txtRpm.setText(rpm);
+                } catch (Exception e) {
+                    LogUtils.logError(e);
+                }
             }
         });
 
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(this, "Couldn't disconnect to OBD Reader", Toast.LENGTH_SHORT).show();
-            logError(e);
+            LogUtils.logError(e);
         }
         super.onDestroy();
     }
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
         } catch (IOException e) {
             Log.d("CONNECTION", "Failed to connect to " + p_address);
             Toast.makeText(this, "Couldn't connect to OBD Reader\n" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-            logError(e);
+            LogUtils.logError(e);
         }
     }
 
@@ -97,24 +97,5 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
             rpm = (p_data[2] * 256 + p_data[3]) / 4;
         }
         return rpm;
-    }
-
-    private void logError(Exception p_exception) {
-        String logPath = Environment.getExternalStorageDirectory() + File.separator + "OBDCrashes" + File.separator + "log.txt";
-        Log.d("MainActivity", "Wrote log to : " + logPath);
-        try {
-            FileOutputStream out = new FileOutputStream(logPath, Boolean.TRUE);
-            OutputStreamWriter writer = new OutputStreamWriter(out);
-            writer.write("New Exception\n");
-            writer.write("Date : " + new Date(System.currentTimeMillis()) + '\n' + '\n');
-            for (StackTraceElement elem : p_exception.getStackTrace()) {
-                writer.write(elem.toString() + "\n");
-            }
-            writer.write("\n\n\n");
-            writer.close();
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
