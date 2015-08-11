@@ -24,27 +24,27 @@ import java.util.Set;
  * Activities that contain this fragment must implement the
  * {@link BluethoothDevicesDialogListener} interface
  * to handle interaction events.
- * Use the {@link BluethoothDevicesDialog#newInstance} factory method to
+ * Use the {@link BluetoothDevicesDialog#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BluethoothDevicesDialog extends DialogFragment {
+public class BluetoothDevicesDialog extends DialogFragment {
 
     private BluethoothDevicesDialogListener mListener;
 
     private Set<BluetoothDevice> m_bluetoothDevices;
 
-    public BluethoothDevicesDialog() {
+    public BluetoothDevicesDialog() {
         // Required empty public constructor
     }
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     * @return A new instance of fragment BluethoothDevicesDialog.
+     * @return A new instance of fragment BluetoothDevicesDialog.
      */
     // TODO: Rename and change types and number of parameters
-    public static BluethoothDevicesDialog newInstance() {
-        return new BluethoothDevicesDialog();
+    public static BluetoothDevicesDialog newInstance() {
+        return new BluetoothDevicesDialog();
     }
 
     @Override

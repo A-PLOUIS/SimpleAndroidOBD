@@ -9,17 +9,17 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.testapp.simpleandroidobd.dialog.BluethoothDevicesDialog;
+import com.testapp.simpleandroidobd.dialog.BluetoothDevicesDialog;
 import com.testapp.simpleandroidobd.obd.OBDManager;
 import com.testapp.simpleandroidobd.utils.LogUtils;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity implements BluethoothDevicesDialog.BluethoothDevicesDialogListener {
+public class MainActivity extends AppCompatActivity implements BluetoothDevicesDialog.BluethoothDevicesDialogListener {
 
     private OBDManager m_obdManager;
     private TextView m_txtRpm;
-    private BluethoothDevicesDialog m_dlgBluetoothDevices;
+    private BluetoothDevicesDialog m_dlgBluetoothDevices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements BluethoothDevices
             }
         });
 
-        m_dlgBluetoothDevices = BluethoothDevicesDialog.newInstance();
+        m_dlgBluetoothDevices = BluetoothDevicesDialog.newInstance();
         m_dlgBluetoothDevices.show(getSupportFragmentManager(), "dialog_bluetooth_devices");
     }
 
