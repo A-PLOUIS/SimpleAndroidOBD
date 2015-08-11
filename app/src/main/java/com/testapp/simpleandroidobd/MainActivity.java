@@ -14,6 +14,7 @@ import com.testapp.simpleandroidobd.obd.OBDManager;
 import com.testapp.simpleandroidobd.utils.LogUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements BluetoothDevicesDialog.BluethoothDevicesDialogListener {
 
@@ -32,11 +33,18 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
             @Override
             public void onClick(View v) {
                 try {
-                    byte[] result = m_obdManager.launchOBDCommand("010C");
-                    int rpm = computeEngineRPM(result);
-                    m_txtRpm.setText(rpm);
+                    ArrayList<Integer> result = m_obdManager.launchOBDCommand("01 0C");
+                    if (result == null) {
+                        Toast.makeText(getBaseContext(), "Null RPM", Toast.LENGTH_SHORT).show();
+                    } else if (result.isEmpty()) {
+                        Toast.makeText(getBaseContext(), "Empty RPM", Toast.LENGTH_SHORT).show();
+                    } else {
+                        int rpm = computeEngineRPM(result);
+                        m_txtRpm.setText(rpm);
+                    }
                 } catch (Exception e) {
                     LogUtils.logError(e);
+                    Toast.makeText(getBaseContext(), "Error retrieving rpm\n" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -91,11 +99,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
         }
     }
 
-    private int computeEngineRPM(byte[] p_data) {
-        int rpm = -1;
-        if (p_data.length == 4) {
-            rpm = (p_data[2] * 256 + p_data[3]) / 4;
-        }
-        return rpm;
+    private int computeEngineRPM(ArrayList<Integer> p_data) {
+        return (p_data.get(2) * 256 + p_data.get(3)) / 4;
     }
 }

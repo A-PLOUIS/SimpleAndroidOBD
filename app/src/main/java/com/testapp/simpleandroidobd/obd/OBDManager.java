@@ -10,7 +10,7 @@ import com.testapp.simpleandroidobd.utils.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -40,14 +40,18 @@ public class OBDManager {
         }
     }
 
-    public byte[] launchOBDCommand(String p_command) {
-        try {
-            sendCommand(p_command, m_socket.getOutputStream());
-            return readResponse(m_socket.getInputStream());
-        } catch (IOException e) {
-            LogUtils.logError(e);
-            e.printStackTrace();
-            return new byte[0];
+    public ArrayList<Integer> launchOBDCommand(final String p_command) {
+        if (m_socket != null) {
+            try {
+                sendCommand(p_command, m_socket.getOutputStream());
+                return readResponse(m_socket.getInputStream());
+            } catch (IOException e) {
+                LogUtils.logError(e);
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            return null;
         }
     }
 
@@ -72,12 +76,38 @@ public class OBDManager {
         }
     }
 
-    private byte[] readResponse(InputStream in) throws IOException {
-        byte[] buffer = new byte[4];
-        in.read(buffer);
-        Log.d(LOG_TAG, "Buffer size = " + buffer.length);
-        Log.d(LOG_TAG, "Buffer content : " + Arrays.toString(buffer));
+    private ArrayList<Integer> readResponse(InputStream in) throws IOException {
+        String rawData = readRawData(in);
+        rawData = rawData.replaceAll("\\s", ""); //removes all [ \t\n\x0B\f\r]
+        rawData = rawData.replaceAll("(BUS INIT)|(BUSINIT)|(\\.)", "");
+
+        // read string each two chars
+        ArrayList<Integer> buffer = new ArrayList<>();
+        int begin = 0;
+        int end = 2;
+        while (end <= rawData.length()) {
+            buffer.add(Integer.decode("0x" + rawData.substring(begin, end)));
+            begin = end;
+            end += 2;
+        }
         return buffer;
+    }
+
+    private String readRawData(InputStream in) throws IOException {
+        byte b;
+        StringBuilder res = new StringBuilder();
+
+        // read until '>' arrives
+        while ((char) (b = (byte) in.read()) != '>') {
+            res.append((char) b);
+        }
+
+        String rawData = res.toString().replaceAll("SEARCHING", "");
+        rawData = rawData.replaceAll("\\s", "");
+        Log.d(LOG_TAG, "RAWDATA = " + rawData);
+        LogUtils.logResult(rawData);
+
+        return rawData;
     }
 
     public void disconnectFromOBDReader() throws IOException {
