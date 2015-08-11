@@ -15,15 +15,17 @@ import java.util.Date;
 public class LogUtils {
 
     private static final String LOG_TAG = LogUtils.class.getSimpleName();
+    private static final String LOG_FOLDER = Environment.getExternalStorageDirectory() + File.separator + "OBDCrashes" + File.separator;
 
     public static void logError(Exception p_exception) {
-        String logPath = Environment.getExternalStorageDirectory() + File.separator + "OBDCrashes" + File.separator + "log.txt";
+        String logPath = LOG_FOLDER + "log.txt";
         Log.d(LOG_TAG, "Wrote log to : " + logPath);
         try {
             FileOutputStream out = new FileOutputStream(logPath, Boolean.TRUE);
             OutputStreamWriter writer = new OutputStreamWriter(out);
-            writer.write("OBDManager Exception\n");
+            writer.write("Exception\n");
             writer.write("Date : " + new Date(System.currentTimeMillis()) + '\n' + '\n');
+            writer.write(p_exception.getLocalizedMessage() + '\n');
             for (StackTraceElement elem : p_exception.getStackTrace()) {
                 writer.write(elem.toString() + "\n");
             }
@@ -36,7 +38,7 @@ public class LogUtils {
     }
 
     public static void logResult(String result) {
-        String logPath = Environment.getExternalStorageDirectory() + File.separator + "OBDCrashes" + File.separator + "result.txt";
+        String logPath = LOG_FOLDER + "result.txt";
         Log.d(LOG_TAG, "Wrote log to : " + logPath);
         try {
             FileOutputStream out = new FileOutputStream(logPath, Boolean.TRUE);

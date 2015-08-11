@@ -60,7 +60,16 @@ public class OBDManager {
 
     private void sendCommand(String p_command, OutputStream out) throws IOException {
         Log.d(LOG_TAG, "Write command " + p_command);
-        out.write(p_command.getBytes());
+        out.write((p_command + '\r').getBytes());
+        out.flush();
+
+        //We wait 200ms
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            LogUtils.logError(e);
+            e.printStackTrace();
+        }
     }
 
     private byte[] readResponse(InputStream in) throws IOException {
