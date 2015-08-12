@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
         @Override
         public void run() {
             try {
-                ArrayList<Integer> result = m_obdManager.launchOBDCommand("01 0C");
+                ArrayList<Integer> result = m_obdManager.launchOBDCommand("01 0C 1");
                 if (result == null) {
                     Toast.makeText(getBaseContext(), "Null RPM", Toast.LENGTH_SHORT).show();
                 } else if (result.isEmpty()) {
