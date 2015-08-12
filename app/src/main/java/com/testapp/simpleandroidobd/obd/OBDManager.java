@@ -30,13 +30,13 @@ public class OBDManager {
             m_socket.connect();
 
             //Reset OBD
-            sendCommand("AT Z", m_socket.getOutputStream());
+            launchOBDCommand("AT Z");
             //Turn off echo
-            sendCommand("AT E0", m_socket.getOutputStream());
+            launchOBDCommand("AT E0");
             //Timeout to 248ms
-            sendCommand("AT ST " + Integer.toHexString(0xFF & 62), m_socket.getOutputStream());
+            launchOBDCommand("AT ST " + Integer.toHexString(0xFF & 62));
             //Protocol to AUTO(0)
-            sendCommand("AT SP " + "0", m_socket.getOutputStream());
+            launchOBDCommand("AT SP " + "0");
         }
     }
 
