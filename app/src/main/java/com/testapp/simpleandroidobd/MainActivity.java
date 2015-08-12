@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
             m_obdManager.disconnectFromOBDReader();
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Couldn't disconnect to OBD Reader", Toast.LENGTH_SHORT).show();
             LogUtils.logError(e);
         }
         super.onDestroy();
@@ -138,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
                     Toast.makeText(getBaseContext(), "Empty RPM", Toast.LENGTH_SHORT).show();
                 } else {
                     Integer rpm = computeEngineRPM(result);
-                    m_txtRpm.setText(rpm.toString());
+                    m_txtRpm.setText(rpm.toString() + " RPM");
                 }
                 if (m_handler != null) {
                     m_handler.post(new RPMRetriever());

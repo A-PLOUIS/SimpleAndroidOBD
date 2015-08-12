@@ -119,7 +119,11 @@ public class BluetoothDevicesDialog extends DialogFragment {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mListener.connectToBluetoothDevice(currentItem.getAddress());
+                    BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+                    if (adapter != null) {
+                        adapter.cancelDiscovery();
+                        mListener.connectToBluetoothDevice(currentItem.getAddress());
+                    }
                 }
             });
 

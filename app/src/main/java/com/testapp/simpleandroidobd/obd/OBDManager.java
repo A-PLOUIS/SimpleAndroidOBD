@@ -125,7 +125,6 @@ public class OBDManager {
     public void disconnectFromOBDReader() throws IOException {
         if (m_socket != null) {
             m_socket.close();
-            m_socket = null;
         }
     }
 }
