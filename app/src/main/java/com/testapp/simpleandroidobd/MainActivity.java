@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
 
         m_txtRpm = (TextView) findViewById(R.id.txt_rpm);
         m_obdManager = new OBDManager();
-        findViewById(R.id.btn_refresh).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_start_stop).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
