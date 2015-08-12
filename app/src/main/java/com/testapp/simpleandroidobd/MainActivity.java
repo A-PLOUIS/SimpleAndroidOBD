@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.testapp.simpleandroidobd.dialog.BluetoothDevicesDialog;
+import com.testapp.simpleandroidobd.dialog.ConnexionProgressDialog;
 import com.testapp.simpleandroidobd.obd.OBDManager;
 import com.testapp.simpleandroidobd.utils.LogUtils;
 
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
     private OBDManager m_obdManager;
     private TextView m_txtRpm;
     private BluetoothDevicesDialog m_dlgBluetoothDevices;
+    private ConnexionProgressDialog m_waitingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
             }
         });
 
+
+        m_waitingDialog = ConnexionProgressDialog.newInstance("Connecting to ODB Interface");
         m_dlgBluetoothDevices = BluetoothDevicesDialog.newInstance();
         m_dlgBluetoothDevices.show(getSupportFragmentManager(), "dialog_bluetooth_devices");
     }
@@ -90,9 +94,11 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
     @Override
     public void connectToBluetoothDevice(String p_address) {
         try {
+            m_waitingDialog.show(getSupportFragmentManager(), "dialog_connexion_progress");
             m_obdManager.connectToOBDReader(p_address);
-            m_dlgBluetoothDevices.dismiss();
+            m_waitingDialog.dismiss();
         } catch (IOException e) {
+            m_waitingDialog.dismiss();
             Log.d("CONNECTION", "Failed to connect to " + p_address);
             Toast.makeText(this, "Couldn't connect to OBD Reader\n" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             LogUtils.logError(e);
