@@ -1,11 +1,13 @@
 package com.testapp.simpleandroidobd;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,9 +22,16 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements BluetoothDevicesDialog.BluethoothDevicesDialogListener {
 
     private OBDManager m_obdManager;
+    private Handler m_handler;
+
     private TextView m_txtRpm;
+    private Button m_buttonStarttStop;
+
+
     private BluetoothDevicesDialog m_dlgBluetoothDevices;
     private ConnexionProgressDialog m_waitingDialog;
+
+    private Boolean m_bisStart = Boolean.TRUE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,22 +40,30 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
 
         m_txtRpm = (TextView) findViewById(R.id.txt_rpm);
         m_obdManager = new OBDManager();
-        findViewById(R.id.btn_start_stop).setOnClickListener(new View.OnClickListener() {
+
+        m_handler = new Handler();
+        m_buttonStarttStop = (Button) findViewById(R.id.btn_start_stop);
+        m_buttonStarttStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    ArrayList<Integer> result = m_obdManager.launchOBDCommand("01 0C");
-                    if (result == null) {
-                        Toast.makeText(getBaseContext(), "Null RPM", Toast.LENGTH_SHORT).show();
-                    } else if (result.isEmpty()) {
-                        Toast.makeText(getBaseContext(), "Empty RPM", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Integer rpm = computeEngineRPM(result);
-                        m_txtRpm.setText(rpm.toString());
+                if (m_bisStart) {
+                    m_buttonStarttStop.setText("Stop");
+                    m_bisStart = Boolean.FALSE;
+                    m_handler = new Handler();
+                    m_handler.post(new RPMRetriever());
+                } else {
+                    try {
+                        m_handler = null;
+                        m_obdManager.disconnectFromOBDReader();
+                        m_buttonStarttStop.setText("Start");
+                        m_bisStart = Boolean.FALSE;
+                    } catch (IOException e) {
+                        Toast.makeText(getBaseContext(),
+                                "Couldn't disconnect to OBD Reader\n" + e.getLocalizedMessage(),
+                                Toast.LENGTH_SHORT).show();
+                        LogUtils.logError(e);
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    LogUtils.logError(e);
-                    Toast.makeText(getBaseContext(), "Error retrieving rpm\n" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -107,5 +124,29 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
 
     private int computeEngineRPM(ArrayList<Integer> p_data) {
         return (p_data.get(2) * 256 + p_data.get(3)) / 4;
+    }
+
+    private class RPMRetriever implements Runnable {
+
+        @Override
+        public void run() {
+            try {
+                ArrayList<Integer> result = m_obdManager.launchOBDCommand("01 0C");
+                if (result == null) {
+                    Toast.makeText(getBaseContext(), "Null RPM", Toast.LENGTH_SHORT).show();
+                } else if (result.isEmpty()) {
+                    Toast.makeText(getBaseContext(), "Empty RPM", Toast.LENGTH_SHORT).show();
+                } else {
+                    Integer rpm = computeEngineRPM(result);
+                    m_txtRpm.setText(rpm.toString());
+                }
+                if (m_handler != null) {
+                    m_handler.post(new RPMRetriever());
+                }
+            } catch (Exception e) {
+                LogUtils.logError(e);
+                Toast.makeText(getBaseContext(), "Error retrieving rpm\n" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
