@@ -29,14 +29,23 @@ public class OBDManager {
             m_socket = m_device.createRfcommSocketToServiceRecord(SPP_UUID);
             m_socket.connect();
 
-            //Reset OBD
-            launchOBDCommand("AT Z");
-            //Turn off echo
-            launchOBDCommand("AT E0");
-            //Timeout to 248ms
-            launchOBDCommand("AT ST " + Integer.toHexString(0xFF & 62));
-            //Protocol to AUTO(0)
-            launchOBDCommand("AT SP " + "0");
+            try {
+                //Reset OBD
+                sendCommand("AT Z", m_socket.getOutputStream());
+                readRawData(m_socket.getInputStream());
+                //Turn off echo
+                sendCommand("AT E0", m_socket.getOutputStream());
+                readRawData(m_socket.getInputStream());
+                //Timeout to 248ms
+                sendCommand("AT ST " + Integer.toHexString(0xFF & 62), m_socket.getOutputStream());
+                readRawData(m_socket.getInputStream());
+                //Protocol to AUTO(0)
+                sendCommand("AT SP " + "0", m_socket.getOutputStream());
+                readRawData(m_socket.getInputStream());
+
+            } catch (Exception e) {
+                LogUtils.logError(e);
+            }
         }
     }
 
@@ -66,14 +75,6 @@ public class OBDManager {
         Log.d(LOG_TAG, "Write command " + p_command);
         out.write((p_command + '\r').getBytes());
         out.flush();
-
-        //We wait 200ms
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            LogUtils.logError(e);
-            e.printStackTrace();
-        }
     }
 
     private ArrayList<Integer> readResponse(InputStream in) throws IOException {

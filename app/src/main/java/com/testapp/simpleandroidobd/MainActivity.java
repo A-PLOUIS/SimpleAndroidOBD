@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
                     } else if (result.isEmpty()) {
                         Toast.makeText(getBaseContext(), "Empty RPM", Toast.LENGTH_SHORT).show();
                     } else {
-                        int rpm = computeEngineRPM(result);
-                        m_txtRpm.setText(rpm);
+                        Integer rpm = computeEngineRPM(result);
+                        m_txtRpm.setText(rpm.toString());
                     }
                 } catch (Exception e) {
                     LogUtils.logError(e);
