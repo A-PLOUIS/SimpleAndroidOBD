@@ -3,6 +3,7 @@ package com.testapp.simpleandroidobd.obd;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.testapp.simpleandroidobd.utils.LogUtils;
@@ -22,6 +23,10 @@ public class OBDManager {
     private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private BluetoothDevice m_device;
     private BluetoothSocket m_socket;
+
+    //For LOg
+    private String currentCommand;
+    private Long m_commandStart, m_commandEnd;
 
     public void connectToOBDReader(String p_address) throws IOException {
         setBluetoothDevice(p_address);
@@ -73,14 +78,15 @@ public class OBDManager {
 
     private void sendCommand(String p_command, OutputStream out) throws IOException {
         Log.d(LOG_TAG, "Write command " + p_command);
+        currentCommand = p_command;
         out.write((p_command + '\r').getBytes());
         out.flush();
+        m_commandStart = SystemClock.elapsedRealtime();
     }
 
     private ArrayList<Integer> readResponse(InputStream in) throws IOException {
         String rawData = readRawData(in);
         rawData = rawData.replaceAll("\\s", ""); //removes all [ \t\n\x0B\f\r]
-        rawData = rawData.replaceAll("(BUS INIT)|(BUSINIT)|(\\.)", "");
 
         // read string each two chars
         ArrayList<Integer> buffer = new ArrayList<>();
@@ -102,11 +108,16 @@ public class OBDManager {
         while ((char) (b = (byte) in.read()) != '>') {
             res.append((char) b);
         }
+        m_commandEnd = SystemClock.elapsedRealtime();
 
-        String rawData = res.toString().replaceAll("SEARCHING", "");
-        rawData = rawData.replaceAll("\\s", "");
+        String rawData = res.toString();
+        LogUtils.logResult(currentCommand, rawData, m_commandEnd - m_commandStart);
+
+        rawData = rawData.replaceAll("\\s", "")
+                .replaceAll("SEARCHING", "")
+                .replaceAll("(BUS INIT)|(BUSINIT)|(\\.)", "");
+
         Log.d(LOG_TAG, "RAWDATA = " + rawData);
-        LogUtils.logResult(rawData);
 
         return rawData;
     }

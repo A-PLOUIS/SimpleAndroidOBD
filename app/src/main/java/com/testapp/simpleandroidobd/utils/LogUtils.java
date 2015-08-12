@@ -37,13 +37,14 @@ public class LogUtils {
         }
     }
 
-    public static void logResult(String result) {
+    public static void logResult(String command, String result, Long p_latency) {
         String logPath = LOG_FOLDER + "result.txt";
         Log.d(LOG_TAG, "Wrote log to : " + logPath);
         try {
             FileOutputStream out = new FileOutputStream(logPath, Boolean.TRUE);
             OutputStreamWriter writer = new OutputStreamWriter(out);
-            writer.write("Result\n");
+            writer.write("Result for " + command + '\n');
+            writer.write("Latency : " + p_latency + '\n');
             writer.write("Date : " + new Date(System.currentTimeMillis()) + '\n' + '\n');
             writer.write(result);
             writer.write("\n\n\n");
