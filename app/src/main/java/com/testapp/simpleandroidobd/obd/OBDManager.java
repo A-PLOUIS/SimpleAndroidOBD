@@ -86,7 +86,6 @@ public class OBDManager {
 
     private ArrayList<Integer> readResponse(InputStream in) throws IOException {
         String rawData = readRawData(in);
-        rawData = rawData.replaceAll("\\s", ""); //removes all [ \t\n\x0B\f\r]
 
         // read string each two chars
         ArrayList<Integer> buffer = new ArrayList<>();

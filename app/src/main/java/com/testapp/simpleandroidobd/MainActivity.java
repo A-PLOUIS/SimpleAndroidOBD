@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
             m_waitingDialog.show(getSupportFragmentManager(), "dialog_connexion_progress");
             m_obdManager.connectToOBDReader(p_address);
             m_waitingDialog.dismiss();
+            m_dlgBluetoothDevices.dismiss();
         } catch (IOException e) {
             m_waitingDialog.dismiss();
             Log.d("CONNECTION", "Failed to connect to " + p_address);
