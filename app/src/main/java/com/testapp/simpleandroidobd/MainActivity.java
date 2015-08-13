@@ -52,18 +52,9 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
                     m_handler = new Handler();
                     m_handler.post(new RPMRetriever());
                 } else {
-                    try {
                         m_handler = null;
-                        m_obdManager.disconnectFromOBDReader();
                         m_buttonStarttStop.setText("Start");
                         m_bisStart = Boolean.FALSE;
-                    } catch (IOException e) {
-                        Toast.makeText(getBaseContext(),
-                                "Couldn't disconnect to OBD Reader\n" + e.getLocalizedMessage(),
-                                Toast.LENGTH_SHORT).show();
-                        LogUtils.logError(e);
-                        e.printStackTrace();
-                    }
                 }
             }
         });
