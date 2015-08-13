@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
     private Handler m_handler;
 
     private TextView m_txtRpm;
+    private TextView m_txtLatency;
     private Button m_buttonStarttStop;
 
 
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
         setContentView(R.layout.activity_main);
 
         m_txtRpm = (TextView) findViewById(R.id.txt_rpm);
+        m_txtLatency = (TextView) findViewById(R.id.txt_latency);
         m_obdManager = new OBDManager();
 
         m_handler = new Handler();
@@ -128,6 +130,10 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
                 } else if (result.isEmpty()) {
                     Toast.makeText(getBaseContext(), "Empty RPM", Toast.LENGTH_SHORT).show();
                 } else {
+                    //Update latency
+                    Integer latency = result.get(0);
+                    m_txtLatency.setText(latency.toString() + " ms");
+                    result.remove(0);
                     Integer rpm = computeEngineRPM(result);
                     m_txtRpm.setText(rpm.toString() + " RPM");
                 }

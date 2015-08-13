@@ -89,6 +89,7 @@ public class OBDManager {
 
         // read string each two chars
         ArrayList<Integer> buffer = new ArrayList<>();
+        buffer.add((m_commandEnd.intValue() - m_commandStart.intValue()));
         int begin = 0;
         int end = 2;
         while (end <= rawData.length()) {
