@@ -19,10 +19,22 @@
         android:text="Refresh" />
 
     <TextView
+        android:id="@+id/txt_latency"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_above="@id/btn_start_stop"
+        android:gravity="center"
+        android:padding="24dp"
+        android:text="Latency" />
+
+    <TextView
         android:id="@+id/txt_rpm"
         style="@style/TextAppearance.AppCompat.Large"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/txt_latency"
+        android:layout_alignParentTop="true"
         android:gravity="center"
         android:padding="24dp"
         android:text="Engine RPM" />
