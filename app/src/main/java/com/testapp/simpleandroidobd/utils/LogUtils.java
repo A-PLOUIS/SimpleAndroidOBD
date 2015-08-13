@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Date;
@@ -41,15 +42,21 @@ public class LogUtils {
         String logPath = LOG_FOLDER + "result.txt";
         Log.d(LOG_TAG, "Wrote log to : " + logPath);
         try {
-            FileOutputStream out = new FileOutputStream(logPath, Boolean.TRUE);
-            OutputStreamWriter writer = new OutputStreamWriter(out);
-            writer.write("Result for " + command + '\n');
-            writer.write("Latency : " + p_latency + '\n');
-            writer.write("Date : " + new Date(System.currentTimeMillis()) + '\n' + '\n');
-            writer.write(result);
-            writer.write("\n\n\n");
+            File logFile = new File(logPath);
+            boolean logFileExist = logFile.exists();
+            FileWriter writer = new FileWriter(logFile, Boolean.TRUE);
+            if (!logFileExist) {
+                //Write column names
+                writer.write("Command\tResult\tLatency\n");
+            }
+
+            //Write row
+            String row = "" + command
+                    + "\t" + result
+                    + "\t" + p_latency + "\n";
+            writer.write(row);
+
             writer.close();
-            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
