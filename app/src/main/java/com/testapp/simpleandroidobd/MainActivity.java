@@ -21,6 +21,9 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements BluetoothDevicesDialog.BluethoothDevicesDialogListener {
 
+    private static final String LOG_HANDLER = "OBDHandler";
+    private static int ITERATION_NUMBER = 0;
+
     private OBDManager m_obdManager;
     private Handler m_handler;
 
@@ -50,13 +53,16 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
             public void onClick(View v) {
                 if (m_bisStart) {
                     m_buttonStarttStop.setText("Stop");
+                    Log.d(LOG_HANDLER, "Start service");
+                    ITERATION_NUMBER = 0;
                     m_bisStart = Boolean.FALSE;
                     m_handler = new Handler();
                     m_handler.post(new RPMRetriever());
                 } else {
                         m_handler = null;
+                    Log.d(LOG_HANDLER, "Stopping service");
                         m_buttonStarttStop.setText("Start");
-                        m_bisStart = Boolean.FALSE;
+                    m_bisStart = Boolean.TRUE;
                 }
             }
         });
@@ -124,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
         @Override
         public void run() {
             try {
+                ++ITERATION_NUMBER;
+                Log.d(LOG_HANDLER, "Request " + ITERATION_NUMBER + " Start");
                 ArrayList<Integer> result = m_obdManager.launchOBDCommand("01 0C 1");
                 if (result == null) {
                     Toast.makeText(getBaseContext(), "Null RPM", Toast.LENGTH_SHORT).show();
@@ -137,6 +145,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
                     Integer rpm = computeEngineRPM(result);
                     m_txtRpm.setText(rpm.toString() + " RPM");
                 }
+
+                Log.d(LOG_HANDLER, "Request " + ITERATION_NUMBER + " End");
                 if (m_handler != null) {
                     m_handler.post(new RPMRetriever());
                 }
