@@ -49,8 +49,8 @@ public class LogUtils {
             FileWriter writer = new FileWriter(resultFile, Boolean.TRUE);
             //Write row
             String row = "" + command
-                    + "\t" + result
-                    + "\t" + p_latency + "\n";
+                    + '\t' + result.replaceAll("\\t", "").replaceAll("\\n", "").replaceAll("\\r", "")
+                    + '\t' + p_latency + '\n';
             writer.write(row);
 
             writer.close();
