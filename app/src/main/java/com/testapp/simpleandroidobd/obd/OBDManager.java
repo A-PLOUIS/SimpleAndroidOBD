@@ -33,6 +33,7 @@ public class OBDManager {
         if (m_device != null) {
             m_socket = m_device.createRfcommSocketToServiceRecord(SPP_UUID);
             m_socket.connect();
+            LogUtils.createNewResultFileForConnexion();
 
             try {
                 //Reset OBD

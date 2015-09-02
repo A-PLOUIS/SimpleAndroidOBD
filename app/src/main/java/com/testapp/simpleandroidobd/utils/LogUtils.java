@@ -4,10 +4,12 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -39,17 +41,12 @@ public class LogUtils {
     }
 
     public static void logResult(String command, String result, Long p_latency) {
-        String logPath = LOG_FOLDER + "result.txt";
+        String logPath = getLatestResultFile();
+        File resultFile = new File(logPath);
         Log.d(LOG_TAG, "Wrote log to : " + logPath);
-        try {
-            File logFile = new File(logPath);
-            boolean logFileExist = logFile.exists();
-            FileWriter writer = new FileWriter(logFile, Boolean.TRUE);
-            if (!logFileExist) {
-                //Write column names
-                writer.write("Command\tResult\tLatency\n");
-            }
 
+        try {
+            FileWriter writer = new FileWriter(resultFile, Boolean.TRUE);
             //Write row
             String row = "" + command
                     + "\t" + result
@@ -59,6 +56,57 @@ public class LogUtils {
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void createNewResultFileForConnexion() {
+        Date currentDate = new Date();
+        SimpleDateFormat localDateFormat = new SimpleDateFormat("yyyyMMdd");
+        String logPath = LOG_FOLDER + "result_" +
+                localDateFormat.format(currentDate)
+                + "_" + System.currentTimeMillis() + ".txt";
+
+        try {
+            File logFile = new File(logPath);
+            FileWriter writer = new FileWriter(logFile, Boolean.TRUE);
+            writer.write("Command\tResult\tLatency\n");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String getLatestResultFile() {
+        String sResultPath = null;
+
+        File logsDir = new File(LOG_FOLDER);
+        File[] files = logsDir.listFiles(new LogFilter());
+
+        if (files != null && files.length > 0) {
+            File mostRecentFile = files[0];
+            for (File file : files) {
+                if (mostRecentFile.lastModified() < file.lastModified()) {
+                    mostRecentFile = file;
+                }
+            }
+
+            sResultPath = mostRecentFile.getAbsolutePath();
+        }
+        return sResultPath;
+    }
+
+    private static class LogFilter implements FileFilter {
+
+        @Override
+        public boolean accept(File file) {
+            boolean result = false;
+
+            if (file.isFile()) {
+                String fileName = file.getName();
+                result = fileName.startsWith("result");
+            }
+
+            return result;
         }
     }
 }
