@@ -16,7 +16,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:gravity="center_horizontal"
-        android:text="Refresh" />
+        android:text="@string/button_start" />
 
     <TextView
         android:id="@+id/txt_latency"

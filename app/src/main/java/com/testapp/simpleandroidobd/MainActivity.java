@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
             @Override
             public void onClick(View v) {
                 if (m_bisStart) {
-                    m_buttonStarttStop.setText("Stop");
+                    m_buttonStarttStop.setText(R.string.button_stop);
                     Log.d(LOG_HANDLER, "Start service");
                     ITERATION_NUMBER = 0;
                     m_bisStart = Boolean.FALSE;
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
                 } else {
                         m_handler = null;
                     Log.d(LOG_HANDLER, "Stopping service");
-                        m_buttonStarttStop.setText("Start");
+                    m_buttonStarttStop.setText(R.string.button_start);
                     m_bisStart = Boolean.TRUE;
                 }
             }
