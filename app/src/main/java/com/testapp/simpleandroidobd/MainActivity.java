@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_devices) {
+            m_dlgBluetoothDevices.show(getSupportFragmentManager(), "dialog_bluetooth_devices");
         }
 
         return super.onOptionsItemSelected(item);
@@ -109,6 +111,9 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
     @Override
     public void connectToBluetoothDevice(String p_address) {
         try {
+            //We disconnect if previously connected to another device
+            m_obdManager.disconnectFromOBDReader();
+
             m_waitingDialog.show(getSupportFragmentManager(), "dialog_connexion_progress");
             m_obdManager.connectToOBDReader(p_address);
             m_waitingDialog.dismiss();
