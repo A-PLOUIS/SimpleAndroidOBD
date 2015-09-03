@@ -28,14 +28,16 @@ public class OBDManager {
     private String currentCommand;
     private Long m_commandStart, m_commandEnd;
 
-    public void connectToOBDReader(String p_address) throws IOException {
-        setBluetoothDevice(p_address);
+    public void connectToOBDReader(String p_address) {
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter != null) {
+            this.m_device = adapter.getRemoteDevice(p_address);
+        }
         if (m_device != null) {
-            m_socket = m_device.createRfcommSocketToServiceRecord(SPP_UUID);
-            m_socket.connect();
-            LogUtils.createNewResultFileForConnexion();
-
             try {
+                m_socket = m_device.createRfcommSocketToServiceRecord(SPP_UUID);
+                m_socket.connect();
+                LogUtils.createNewResultFileForConnexion();
                 //Reset OBD
                 sendCommand("AT Z", m_socket.getOutputStream());
                 readRawData(m_socket.getInputStream());
@@ -67,13 +69,6 @@ public class OBDManager {
             }
         } else {
             return null;
-        }
-    }
-
-    private void setBluetoothDevice(String p_address) {
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (adapter != null) {
-            this.m_device = adapter.getRemoteDevice(p_address);
         }
     }
 

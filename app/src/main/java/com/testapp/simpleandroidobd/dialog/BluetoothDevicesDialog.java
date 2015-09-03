@@ -31,8 +31,6 @@ public class BluetoothDevicesDialog extends DialogFragment {
 
     private BluethoothDevicesDialogListener mListener;
 
-    private Set<BluetoothDevice> m_bluetoothDevices;
-
     public BluetoothDevicesDialog() {
         // Required empty public constructor
     }
@@ -42,35 +40,35 @@ public class BluetoothDevicesDialog extends DialogFragment {
      * this fragment using the provided parameters.
      * @return A new instance of fragment BluetoothDevicesDialog.
      */
-    // TODO: Rename and change types and number of parameters
     public static BluetoothDevicesDialog newInstance() {
         return new BluetoothDevicesDialog();
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        Set<BluetoothDevice> m_bluetoothDevices = null;
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter != null) {
             m_bluetoothDevices = adapter.getBondedDevices();
         } else {
             Toast.makeText(getActivity(), "Bluetooth not supported on device", Toast.LENGTH_LONG).show();
         }
-    }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        if (m_bluetoothDevices != null) {
+        if (m_bluetoothDevices == null
+                || m_bluetoothDevices.isEmpty()) {
+            builder.setTitle("No paired devices");
+            //TODO:Launch device bluetooth screen to paire with a device
+
+        } else {
             builder.setTitle("Paired devices");
             builder.setAdapter(new ListDevicesAdapter(getActivity(),
                             android.R.layout.simple_list_item_1,
                             m_bluetoothDevices.toArray(new BluetoothDevice[m_bluetoothDevices.size()])),
                     null);
-        } else {
-            builder.setTitle("No paired devices");
         }
         return builder.create();
     }
