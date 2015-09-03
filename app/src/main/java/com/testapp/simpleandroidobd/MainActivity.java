@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
 
     private TextView m_txtRpm;
     private TextView m_txtLatency;
-    private Button m_buttonStarttStop;
+    private Button m_buttonStarttStop, m_buttonDisconnect;
 
 
     private BluetoothDevicesDialog m_dlgBluetoothDevices;
@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
 
         m_handler = new Handler();
         m_buttonStarttStop = (Button) findViewById(R.id.btn_start_stop);
+        m_buttonDisconnect = (Button) findViewById(R.id.btn_disconnect);
         m_buttonStarttStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,6 +64,18 @@ public class MainActivity extends AppCompatActivity implements BluetoothDevicesD
                     Log.d(LOG_HANDLER, "Stopping service");
                     m_buttonStarttStop.setText(R.string.button_start);
                     m_bisStart = Boolean.TRUE;
+                }
+            }
+        });
+        m_buttonDisconnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    m_obdManager.disconnectFromOBDReader();
+                } catch (IOException e) {
+                    Toast.makeText(getBaseContext(), "Error disconnecting", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                    LogUtils.logError(e);
                 }
             }
         });
