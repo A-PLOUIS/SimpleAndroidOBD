@@ -45,11 +45,26 @@ public class LogUtils {
         File resultFile = new File(logPath);
         Log.d(LOG_TAG, "Wrote log to : " + logPath);
 
+        byte[] commandBytes = command.getBytes();
+        String commandHex = "";
+        for (byte byteTo : commandBytes) {
+            commandHex += "" + Integer.toHexString(byteTo);
+        }
+
+        result = result.replaceAll("\\t", "").replaceAll("\\n", "").replaceAll("\\r", "");
+        byte[] resultBytes = result.getBytes();
+        String stringHex = "";
+        for (byte byteTo : resultBytes) {
+            stringHex += "" + Integer.toHexString(byteTo);
+        }
+
         try {
             FileWriter writer = new FileWriter(resultFile, Boolean.TRUE);
             //Write row
             String row = "" + command
-                    + '\t' + result.replaceAll("\\t", "").replaceAll("\\n", "").replaceAll("\\r", "")
+                    + '\t' + commandHex
+                    + '\t' + result
+                    + '\t' + stringHex
                     + '\t' + p_latency + '\n';
             writer.write(row);
 
@@ -69,7 +84,7 @@ public class LogUtils {
         try {
             File logFile = new File(logPath);
             FileWriter writer = new FileWriter(logFile, Boolean.TRUE);
-            writer.write("Command\tResult\tLatency\n");
+            writer.write("Command\tCommand(hex)\tResult\tResult(Hex)\tLatency\n");
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
